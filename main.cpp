@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "WindowsPlatform.h"
 #include "OpenGLAPI.h"
+#include "MeshLoaderSystem.h"
 int main(int argc, char* argv[])
 {
     WindowsPlatform platform;
@@ -8,6 +9,8 @@ int main(int argc, char* argv[])
     platform.InitWindow();
     graphics.Init();
     printf("Welcome to McShooty's\n");
+    Mesh spiral;
+    MeshLoaderSystem::ProcessMesh("C:\\Users\\Caleb\\Documents\\GitHub\\PortableEngine\\Assets\\Models\\helix.obj", spiral);
     while (!(GetAsyncKeyState(VK_ESCAPE) & 0x8000)) 
     {
         platform.Run();
