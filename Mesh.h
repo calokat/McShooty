@@ -2,6 +2,9 @@
 #include <vector>
 #include "Vertex.h"
 #include <string>
+#include "MeshRenderData.h"
+#include <memory>
+
 class Mesh
 {
 public:
@@ -9,4 +12,5 @@ public:
 	std::string path;
 	std::vector<Vertex> rawVertices;
 	std::vector<unsigned int> rawIndices;
+	std::unique_ptr<MeshRenderData> renderData;
 };
