@@ -13,10 +13,19 @@ public:
     OpenGLRenderSystem();
     void InstantiateRenderedObject(RenderedObject& ro);
     void LoadRenderCameraParams(const Camera& camera);
+    void Draw(RenderedObject& ro);
 private:
+    struct UnlitColorShaderData
+    {
+        GLint attribInPosition;
+        GLint uniColorTint;
+        GLint uniModel;
+        GLint uniView;
+        GLint uniProjection;
+    } unlitColorVars;
     void InitShaders();
+    void UpdateRenderer(RenderedObject& ro);
     OpenGLShaderProgram programs[1];
-    UnlitColorRenderer unlitColorVars;
     glm::mat4 cameraView;
     glm::mat4 cameraProjection;
 };

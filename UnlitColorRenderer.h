@@ -1,10 +1,6 @@
 #pragma once
-#include <gl/glew.h>
+#include "glm/fwd.hpp"
 struct UnlitColorRenderer
 {
-    GLint attribInPosition;
-    GLint uniColorTint;
-    GLint uniModel;
-    GLint uniView;
-    GLint uniProjection;
+	glm::vec4 colorTint;
 };
