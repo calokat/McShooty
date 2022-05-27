@@ -6,4 +6,5 @@ struct RenderedObject
 {
     Mesh mesh;
     Transform transform;
+    UnlitColorRenderer renderer;
 };
