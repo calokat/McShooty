@@ -1,6 +1,5 @@
 #include "LinuxPlatform.h"
 #include <GL/glew.h>
-#include <imgui_impl_sdl.h>
 
 LinuxPlatform::LinuxPlatform()
 {
@@ -13,7 +12,6 @@ LinuxPlatform::LinuxPlatform()
 
 LinuxPlatform::~LinuxPlatform()
 {
-	ImGui_ImplSDL2_Shutdown();
 }
 
 int LinuxPlatform::InitWindow()
@@ -43,5 +41,4 @@ void* LinuxPlatform::GetDeviceContext()
 }
 void LinuxPlatform::NewGuiFrame()
 {
-	ImGui_ImplSDL2_NewFrame(g_Window);
 }

@@ -1,8 +1,6 @@
 #if defined(__EMSCRIPTEN__) || defined(__linux__)
 #include "OpenGLESContext.h"
 #include <iostream>
-#include <imgui_impl_sdl.h>
-#include <imgui.h>
 
 
 	// ESContext esContext;
@@ -98,7 +96,6 @@ void* OpenGLESContext::GetContext()
 		fprintf(stderr, "Failed to initialize WebGL context!\n");
 		return nullptr;
 	}
-	ImGui_ImplSDL2_InitForOpenGL((SDL_Window*)platform->GetWindowHandle(), g_GLContext);
 	SDL_GL_SetSwapInterval(1);
 	glEnable(GL_DEPTH_TEST);
 
