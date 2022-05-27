@@ -1,7 +1,4 @@
 #pragma once
-#include <string>
-#include <glm/glm.hpp>
-#include <entt/entt.hpp>
 class IPlatform
 {
 public:
