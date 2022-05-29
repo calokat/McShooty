@@ -28,7 +28,7 @@ int LinuxPlatform::InitWindow()
 
 long LinuxPlatform::Run()
 {
-	return 0;
+	return inputSystem.ShouldQuit();
 }
 
 void* LinuxPlatform::GetWindowHandle()
@@ -41,4 +41,9 @@ void* LinuxPlatform::GetDeviceContext()
 }
 void LinuxPlatform::NewGuiFrame()
 {
+}
+
+IInputSystem& LinuxPlatform::GetInputSystem()
+{
+	return inputSystem;
 }
