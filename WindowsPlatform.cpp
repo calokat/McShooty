@@ -69,6 +69,7 @@ int WindowsPlatform::InitWindow()
 	//UpdateWindow(hwnd);
 
 	hdc = GetDC(hwnd);
+	inputSystem = WindowsInputSystem(hwnd);
 	// Return an "everything is ok" HRESULT value
 	return S_OK;
 
@@ -119,9 +120,14 @@ void* WindowsPlatform::GetDeviceContext()
 	return &hdc;
 }
 
+IInputSystem& WindowsPlatform::GetInputSystem()
+{
+	return inputSystem;
+}
 
 
-WindowsPlatform::WindowsPlatform()
+
+WindowsPlatform::WindowsPlatform(): inputSystem(WindowsInputSystem(HWND()))
 {
 	staticThis = this;
 }

@@ -2,6 +2,8 @@
 #pragma once
 #include "IPlatform.h"
 #include <Windows.h>
+#include "WindowsInputSystem.h"
+
 class WindowsPlatform :
 	public IPlatform
 {
@@ -15,6 +17,7 @@ public:
 	long Run();
 	void* GetWindowHandle();
 	void* GetDeviceContext();
+	IInputSystem& GetInputSystem();
 private:
 	const int windowWidth = 800;
 	const int windowHeight = 600;
@@ -25,5 +28,6 @@ private:
 	bool hasFocus;
 	HWND hwnd;
 	HDC hdc;
+	WindowsInputSystem inputSystem;
 };
 #endif
