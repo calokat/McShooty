@@ -1,3 +1,4 @@
+#ifdef __linux__
 #include "LinuxInputSystem.h"
 #include <iostream>
 #include <SDL2/SDL.h>
@@ -237,3 +238,4 @@ int LinuxInputSystem::ShouldQuit()
 {
 	return shouldQuit;
 }
+#endif

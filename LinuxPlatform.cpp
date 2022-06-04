@@ -1,3 +1,4 @@
+#ifdef __linux__
 #include "LinuxPlatform.h"
 #include <GL/glew.h>
 
@@ -47,3 +48,4 @@ IInputSystem& LinuxPlatform::GetInputSystem()
 {
 	return inputSystem;
 }
+#endif
