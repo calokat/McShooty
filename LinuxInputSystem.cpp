@@ -181,9 +181,6 @@ void LinuxInputSystem::GetKeyPressed()
 		{
 			shouldQuit = 1;
 		}
-		glm::ivec2 mousePos = {};
-		SDL_GetMouseState(&mousePos.x, &mousePos.y);
-		current.cursorPos = mousePos;
     }
 	 int mx, my;
 	 SDL_GetMouseState(&mx, &my);
