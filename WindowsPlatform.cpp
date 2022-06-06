@@ -90,7 +90,7 @@ HWND WindowsPlatform::GetHwnd()
 	return hwnd;
 }
 
-long WindowsPlatform::Run()
+bool WindowsPlatform::Run()
 {
 		MSG msg = {};
 		//while (msg.message != WM_QUIT)
@@ -100,14 +100,14 @@ long WindowsPlatform::Run()
 			{
 				if (msg.message == WM_QUIT)
 				{
-					return 1;
+					return false;
 				}
 				// Translate and dispatch the message
 				// to our custom WindowProc function
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
 			}
-			return 0;
+			return true;
 }
 
 void* WindowsPlatform::GetWindowHandle()

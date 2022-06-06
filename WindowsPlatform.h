@@ -14,7 +14,7 @@ public:
 	unsigned int GetWindowWidth();
 	unsigned int GetWindowHeight();
 	HWND GetHwnd();
-	long Run();
+	bool Run();
 	void* GetWindowHandle();
 	void* GetDeviceContext();
 	IInputSystem& GetInputSystem();

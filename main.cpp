@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
     renderSystem.InstantiateRenderedObject(spiral);
     renderSystem.InstantiateRenderedObject(torus);
     
-    while (platform.Run() == 0)
+    while (platform.Run())
     {
         graphics.ClearScreen();
         renderSystem.Draw(spiral);
