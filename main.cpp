@@ -18,25 +18,16 @@
 #define SetupAttribute(index, size, type, structure, element) \
 	glVertexAttribPointer(index, size, type, 0, sizeof(structure), (void*)offsetof(structure, element)); \
 
-bool EventLoop()
-{
-    SDL_Event e;
-    while (SDL_PollEvent(&e))
-    {
-        if (e.type == SDL_KEYDOWN)
-        {
-            if (e.key.keysym.scancode == SDL_Scancode::SDL_SCANCODE_ESCAPE)
-            {
-                return false;
-            }
-        }
-    }
-    return true;
-}
 
 int main(int argc, char* argv[])
 {
+#ifdef _WIN32
+    WindowsPlatform platform;
+    SetCurrentDirectory("..\\Assets");
+#elif defined __linux__
     LinuxPlatform platform;
+    chdir("../Assets");
+#endif
     OpenGLAPI graphics(&platform);
     platform.InitWindow();
     graphics.Init();
@@ -45,12 +36,12 @@ int main(int argc, char* argv[])
     spiral.renderer.colorTint = { 1, 0, 1, 1 };
     torus.renderer.colorTint = { 1, .6f, 0, 1 };
     Camera camera(8.0f / 6);
-    Transform cameraTransform;
+    Transform cameraTransform; 
     TransformSystem::CalculateWorldMatrix(&cameraTransform);
     CameraSystem::CalculateViewMatrixLH(camera, cameraTransform);
     CameraSystem::CalculateProjectionMatrixLH(camera, camera.aspectRatio);
-    MeshLoaderSystem::ProcessMesh("~/git/PortableEngine/Assets/Models/helix.obj", spiral.mesh);
-    MeshLoaderSystem::ProcessMesh("~/git/PortableEngine/Assets/Models/helix.obj", torus.mesh);
+    MeshLoaderSystem::ProcessMesh("Models\\helix.obj", spiral.mesh);
+    MeshLoaderSystem::ProcessMesh("Models\\helix.obj", torus.mesh);
     spiral.mesh.renderData = std::make_unique<MeshOpenGLRenderData>();
     torus.mesh.renderData = std::make_unique<MeshOpenGLRenderData>();
     OpenGLRenderSystem renderSystem;
@@ -61,9 +52,9 @@ int main(int argc, char* argv[])
     TransformSystem::CalculateWorldMatrix(&torus.transform);
     renderSystem.InstantiateRenderedObject(spiral);
     renderSystem.InstantiateRenderedObject(torus);
-    while (EventLoop())
+    
+    while (platform.Run() == 0)
     {
-        platform.Run();
         graphics.ClearScreen();
         renderSystem.Draw(spiral);
         renderSystem.Draw(torus);

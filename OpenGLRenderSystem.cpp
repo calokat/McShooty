@@ -37,9 +37,9 @@ void OpenGLRenderSystem::Draw(RenderedObject& ro)
 void OpenGLRenderSystem::InitShaders()
 {
     programs->programID = glCreateProgram();
-    programs->vertex = Shader("C:/Users/Caleb/Documents/GitHub/McShooty/vertex-unlit-color.glsl", GL_VERTEX_SHADER);
+    programs->vertex = Shader("Shaders\\GLSL\\vertex-unlit-color.glsl", GL_VERTEX_SHADER);
     programs->vertex.Compile();
-    programs->fragment = Shader("C:/Users/Caleb/Documents/GitHub/McShooty/fragment-unlit-color.glsl", GL_FRAGMENT_SHADER);
+    programs->fragment = Shader("Shaders\\GLSL\\fragment-unlit-color.glsl", GL_FRAGMENT_SHADER);
     programs->fragment.Compile();
     glAttachShader(programs->programID, programs->vertex.GetId());
     glAttachShader(programs->programID, programs->fragment.GetId());
