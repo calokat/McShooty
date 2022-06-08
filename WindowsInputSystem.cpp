@@ -1,6 +1,5 @@
 #ifdef _WIN64
 #include "WindowsInputSystem.h"
-#include <ctype.h>
 WindowsInputSystem::WindowsInputSystem(HWND h) : hwnd(h)
 {
 	current = {};

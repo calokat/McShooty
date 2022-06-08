@@ -1,8 +1,5 @@
 #pragma once
-#include "Transform.h"
 #include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
 //#include <d3d11.h>
 //#include <math.h>
 class Camera

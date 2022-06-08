@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project("McShooty")
 set(CXX_STANDARD "17")
-file(GLOB src "*.cpp")
+file(GLOB src "*.h" "*.cpp")
 include_directories(".")
 add_executable(Game ${src})
 set_property(TARGET Game PROPERTY CXX_STANDARD 17)

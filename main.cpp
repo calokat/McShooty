@@ -7,7 +7,6 @@
 #endif
 #include "OpenGLAPI.h"
 #include "MeshLoaderSystem.h"
-#include "Shader.h"
 #include "RenderedObject.h"
 #include "MeshOpenGLRenderData.h"
 #include "TransformSystem.h"

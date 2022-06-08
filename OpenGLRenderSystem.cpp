@@ -1,6 +1,8 @@
 #include "OpenGLRenderSystem.h"
-#include <GL/glew.h>
 #include "MeshOpenGLRenderData.h"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 OpenGLRenderSystem::OpenGLRenderSystem()
 {
     InitShaders();

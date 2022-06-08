@@ -1,6 +1,5 @@
 #pragma once
 #include "Transform.h"
-#include "glm/glm.hpp"
 class TransformSystem
 {
 public:

@@ -1,6 +1,8 @@
 #include "TransformSystem.h"
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 void TransformSystem::MoveRelative(glm::vec3 unrotated, Transform* transform)
 {
 	glm::vec4 unrotatedVec(unrotated.x, unrotated.y, unrotated.z, 0);

@@ -1,4 +1,8 @@
 #include "MeshLoaderSystem.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #pragma warning(disable : 4996)
 
 void MeshLoaderSystem::ProcessMesh(const char* path, Mesh& m)

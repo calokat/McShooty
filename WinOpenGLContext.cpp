@@ -1,6 +1,5 @@
 #ifdef _WIN64
 #include "WinOpenGLContext.h"
-#include <iostream>
 
 void* WinOpenGLContext::GetContext()
 {
