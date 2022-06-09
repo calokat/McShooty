@@ -15,8 +15,8 @@ public:
 	unsigned int GetWindowHeight();
 	HWND GetHwnd();
 	bool Run();
-	void* GetWindowHandle();
-	void* GetDeviceContext();
+	HWND GetWindowHandle();
+	HDC GetDeviceContext();
 	IInputSystem& GetInputSystem();
 private:
 	const int windowWidth = 800;

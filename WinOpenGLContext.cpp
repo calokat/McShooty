@@ -1,9 +1,9 @@
 #ifdef _WIN64
 #include "WinOpenGLContext.h"
 
-void* WinOpenGLContext::GetContext()
+HGLRC WinOpenGLContext::GetContext()
 {
-	if (m_hrc != nullptr)
+	if (m_hrc != NULL)
 	{
 		return m_hrc;
 	}
@@ -18,18 +18,18 @@ void* WinOpenGLContext::GetContext()
 	pfd.cDepthBits = 32;
 	pfd.iLayerType = PFD_MAIN_PLANE;
 
-	int nPixelFormat = ChoosePixelFormat(*(HDC*)platform->GetDeviceContext(), &pfd);
+	int nPixelFormat = ChoosePixelFormat(platform.GetDeviceContext(), &pfd);
 
-	SetPixelFormat(*(HDC*)platform->GetDeviceContext(), nPixelFormat, &pfd);
+	SetPixelFormat(platform.GetDeviceContext(), nPixelFormat, &pfd);
 
-	HGLRC tempContext = wglCreateContext(*(HDC*)platform->GetDeviceContext());
-	wglMakeCurrent(*(HDC*)platform->GetDeviceContext(), tempContext);
+	HGLRC tempContext = wglCreateContext(platform.GetDeviceContext());
+	wglMakeCurrent(platform.GetDeviceContext(), tempContext);
 
 	glewExperimental = true;
 	GLenum  glewStatus = glewInit();
 	if (glewStatus != GLEW_OK)
 	{
-		throw "GLEW initialization failed";
+		fprintf(stderr, "Error: %s\n", glewGetErrorString(glewStatus));
 	}
 
 	int attribs[] =
@@ -40,10 +40,10 @@ void* WinOpenGLContext::GetContext()
 		0
 	};
 
-	m_hrc = wglCreateContextAttribsARB(*(HDC*)platform->GetDeviceContext(), 0, attribs);
+	m_hrc = wglCreateContextAttribsARB(platform.GetDeviceContext(), 0, attribs);
 	wglMakeCurrent(NULL, NULL);
 	wglDeleteContext(tempContext);
-	wglMakeCurrent(*(HDC*)platform->GetDeviceContext(), m_hrc);
+	wglMakeCurrent(platform.GetDeviceContext(), m_hrc);
 
 	if (!m_hrc) throw "Unable to get a GL context";
 
@@ -51,12 +51,12 @@ void* WinOpenGLContext::GetContext()
 	return m_hrc;
 }
 
-void WinOpenGLContext::_SwapBuffers(int winHandle)
+void WinOpenGLContext::_SwapBuffers()
 {
-	SwapBuffers(*(HDC*)platform->GetDeviceContext());
+	SwapBuffers(platform.GetDeviceContext());
 }
-WinOpenGLContext::WinOpenGLContext(IPlatform* plat) : platform(plat)
+WinOpenGLContext::WinOpenGLContext(WindowsPlatform& plat) : platform(plat)
 {
-	m_hrc = nullptr;
+	GetContext();
 }
 #endif

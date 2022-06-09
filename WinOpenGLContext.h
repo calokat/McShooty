@@ -3,16 +3,16 @@
 #include "IOpenGLContext.h"
 #include <GL/glew.h>
 #include <GL/wglew.h>
-#include "IPlatform.h"
+#include "WindowsPlatform.h"
 class WinOpenGLContext :
 	public IOpenGLContext
 {
 public:
-	void* GetContext();
-	void _SwapBuffers(int windowHandle);
-	WinOpenGLContext(IPlatform* plat);
+	HGLRC GetContext();
+	void _SwapBuffers();
+	WinOpenGLContext(WindowsPlatform& plat);
 private:
-	HGLRC m_hrc;
-	IPlatform* platform;
+	HGLRC m_hrc = NULL;
+	WindowsPlatform& platform;
 };
 #endif

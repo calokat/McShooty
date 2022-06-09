@@ -27,8 +27,11 @@ int main(int argc, char* argv[])
     LinuxPlatform platform;
     chdir("../Assets");
 #endif
-    OpenGLAPI graphics(&platform);
     platform.InitWindow();
+#ifdef _WIN32
+    WinOpenGLContext winGlContext(platform);
+#endif
+    OpenGLAPI graphics(winGlContext);
     graphics.Init();
     printf("Welcome to McShooty's\n");
     RenderedObject spiral, torus;

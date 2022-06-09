@@ -110,14 +110,14 @@ bool WindowsPlatform::Run()
 			return true;
 }
 
-void* WindowsPlatform::GetWindowHandle()
+HWND WindowsPlatform::GetWindowHandle()
 {
-	return &hwnd;
+	return hwnd;
 }
 
-void* WindowsPlatform::GetDeviceContext()
+HDC WindowsPlatform::GetDeviceContext()
 {
-	return &hdc;
+	return hdc;
 }
 
 IInputSystem& WindowsPlatform::GetInputSystem()
@@ -130,6 +130,7 @@ IInputSystem& WindowsPlatform::GetInputSystem()
 WindowsPlatform::WindowsPlatform(): inputSystem(WindowsInputSystem(HWND()))
 {
 	staticThis = this;
+	hInstance = GetModuleHandle(NULL);
 }
 
 WindowsPlatform::~WindowsPlatform()

@@ -12,16 +12,15 @@ class OpenGLAPI : public IGraphicsAPI
 public:
 	int Init();
 	void ClearScreen();
-	OpenGLAPI(IPlatform*);
+	OpenGLAPI(IOpenGLContext& ctx);
 	void _SwapBuffers();
 	void NewGuiFrame();
 	void DrawGui();
 	~OpenGLAPI();
 	void BindToScreen();
 	// unique to OpenGLAPI, and not shared with the IGraphicsAPI interface
-	IOpenGLContext* GetOpenGLContext();
+	IOpenGLContext& GetOpenGLContext();
 private:
-	IOpenGLContext* glContext;
-	IPlatform* platform;
+	IOpenGLContext& glContext;
 };
 
