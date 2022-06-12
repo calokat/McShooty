@@ -9,6 +9,14 @@
 #include "IPlatform.h"
 #include "IGraphicsAPI.h"
 #include <gl/glew.h>
+#include <vector>
+#include <list>
+#include <map>
+#include "OpenGLRenderSystem.h"
+#include "RenderedObject.h"
+#include "Transform.h"
+#include "xr_linear.h"
+
 struct Swapchain {
     XrSwapchain handle;
     int32_t width;
@@ -36,21 +44,49 @@ class OpenXrApi
 {
 public:
     OpenXrApi(IPlatform& plat, IGraphicsAPI& graph, PE::GraphicsAPI gApiType);
+    void Frame(std::vector<RenderedObject> objects, OpenGLRenderSystem& renderSystem, const Transform& camTransform);
 private:
     XrResult Init();
     XrResult CreateXRInstance();
     void InitializeXRSystem();
-    XrInstance m_instance;
+    void InitializeXRSession();
+    void InitializeActions();
+    void CreateSwapchains();
+    XrFrameState BeginFrame();
+    void PollActions();
+    const XrEventDataBaseHeader* TryReadNextEvent();
+    void PollEvents();
+    void HandleSessionStateChangedEvent(const XrEventDataSessionStateChanged& stateChangedEvent);
+    //void UpdateDevices(XrTime predictedTime);
+    bool LocateViews(XrTime predictedDisplayTime);
+    void CalculateCameraViews(const Transform& primaryCamTransform);
+    void RenderFrame(std::vector<RenderedObject> objects, OpenGLRenderSystem& renderSystem, const Transform& camTransform, XrFrameState frameState);
+    uint32_t GetDepthTexture(uint32_t colorTexture);
+    bool RenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositionLayerProjectionView>& projectionLayerViews, XrCompositionLayerProjection& layer, std::vector<RenderedObject> objects, OpenGLRenderSystem& renderSystem);
+    XrInstance m_instance{ XR_NULL_HANDLE };
     XrEnvironmentBlendMode m_environmentBlendMode;
     XrSystemId m_systemId;
-    XrInstance instance;
+    XrSessionState m_sessionState;
+    XrSession m_session;
+    XrSpace m_appSpace;
+    XrViewConfigurationType m_viewConfigType{ XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO };
+    InputState inputState;
+    std::vector<Camera> viewCams;
+    std::vector<XrViewConfigurationView> m_configViews;
+    std::vector<Swapchain> m_swapchains;
+    std::map<XrSwapchain, std::vector<XrSwapchainImageBaseHeader*>> m_swapchainImages;
+    std::vector<XrView> m_views;
+    std::list<std::vector<XrSwapchainImageOpenGLKHR>> m_swapchainImageBuffers;
+    int64_t m_colorSwapchainFormat{ -1 };
+    XrEventDataBuffer m_eventDataBuffer;
 #ifdef _WIN32
-    XrGraphicsBindingOpenGLWin32KHR m_graphicsBinding;
+    XrGraphicsBindingOpenGLWin32KHR m_graphicsBinding{ XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR };
 #endif
     IPlatform& platformApi;
     IGraphicsAPI& graphicsApi;
     PE::GraphicsAPI graphicsApiType;
-
-
+    bool m_sessionRunning = false;
+    GraphicsAPI graphicsApiEnum;
     GLuint m_swapchainFramebuffer;
+    std::map<uint32_t, uint32_t> m_colorToDepthMap;
 };

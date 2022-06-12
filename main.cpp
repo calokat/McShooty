@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "CameraSystem.h"
 #include "OpenGLRenderSystem.h"
+#include "OpenXrApi.h"
 
 #define SetupAttribute(index, size, type, structure, element) \
 	glVertexAttribPointer(index, size, type, 0, sizeof(structure), (void*)offsetof(structure, element)); \
@@ -34,7 +35,11 @@ int main(int argc, char* argv[])
     OpenGLAPI graphics(winGlContext);
     graphics.Init();
     printf("Welcome to McShooty's\n");
-    RenderedObject spiral, torus;
+    OpenXrApi xr(platform, graphics, PE::GraphicsAPI::OpenGL);
+    //RenderedObject spiral, torus;
+    std::vector<RenderedObject> objectsToRender(2);
+    RenderedObject& spiral = objectsToRender[0];
+    RenderedObject& torus = objectsToRender[1];
     spiral.renderer.colorTint = { 1, 0, 1, 1 };
     torus.renderer.colorTint = { 1, .6f, 0, 1 };
     Camera camera(8.0f / 6);
@@ -61,6 +66,7 @@ int main(int argc, char* argv[])
         renderSystem.Draw(spiral);
         renderSystem.Draw(torus);
         graphics._SwapBuffers();
+        xr.Frame(objectsToRender, renderSystem, cameraTransform);
     }
     return 0;
 }
