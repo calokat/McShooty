@@ -12,5 +12,5 @@ public:
 	std::string path;
 	std::vector<Vertex> rawVertices;
 	std::vector<unsigned int> rawIndices;
-	std::unique_ptr<MeshRenderData> renderData;
+	std::shared_ptr<MeshRenderData> renderData;
 };
