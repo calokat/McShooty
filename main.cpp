@@ -78,6 +78,27 @@ bool CreateFrameBuffer(int nWidth, int nHeight, FramebufferDesc& framebufferDesc
     return true;
 }
 
+glm::mat4 ConvertToGlmMatrix4(const vr::HmdMatrix34_t& vrMatrix)
+{
+    return {
+        {vrMatrix.m[0][0], vrMatrix.m[1][0], vrMatrix.m[2][0], 0.0},
+        {vrMatrix.m[0][1], vrMatrix.m[1][1], vrMatrix.m[2][1], 0.0},
+        {vrMatrix.m[0][2], vrMatrix.m[1][2], vrMatrix.m[2][2], 0.0},
+        {vrMatrix.m[0][3], vrMatrix.m[1][3], vrMatrix.m[2][3], 1.0}
+    };
+}
+
+glm::mat4 ConvertToGlmMatrix4(const vr::HmdMatrix44_t& vrMatrix)
+{
+    return {
+        {vrMatrix.m[0][0], vrMatrix.m[1][0], vrMatrix.m[2][0], vrMatrix.m[3][0]},
+        {vrMatrix.m[0][1], vrMatrix.m[1][1], vrMatrix.m[2][1], vrMatrix.m[3][1]},
+        {vrMatrix.m[0][2], vrMatrix.m[1][2], vrMatrix.m[2][2], vrMatrix.m[3][2]},
+        {vrMatrix.m[0][3], vrMatrix.m[1][3], vrMatrix.m[2][3], vrMatrix.m[3][3]}
+    };
+}
+
+
 int main(int argc, char* argv[])
 {
 #ifdef _WIN32
@@ -107,7 +128,7 @@ int main(int argc, char* argv[])
     CreateFrameBuffer(m_nRenderWidth, m_nRenderHeight, leftEyeDesc);
     CreateFrameBuffer(m_nRenderWidth, m_nRenderHeight, rightEyeDesc);
 
-    vr::VRInput()->SetActionManifestPath("C:/Users/Caleb/Documents/GitHub/McShooty/build/out/Assets/hellovr_actionsbvnmnb.json");
+    vr::VRInput()->SetActionManifestPath("C:/Users/Caleb/Documents/GitHub/McShooty/build/out/Assets/hellovr_actions.json");
     vr::VRActionHandle_t m_actionHideCubes, m_actionHideThisController, m_actionTriggerHaptic, m_actionAnalongInput;
     vr::VRActionSetHandle_t m_actionsetDemo;
     ControllerInfo_t m_rHand[2];
@@ -134,6 +155,7 @@ int main(int argc, char* argv[])
     spiral.renderer.colorTint = { 1, 0, 1, 1 };
     torus.renderer.colorTint = { 1, .6f, 0, 1 };
     Camera camera(8.0f / 6);
+    Camera leftEye((float)m_nRenderWidth / m_nRenderHeight), rightEye((float)m_nRenderWidth / m_nRenderHeight);
     Transform cameraTransform; 
     TransformSystem::CalculateWorldMatrix(&cameraTransform);
     CameraSystem::CalculateViewMatrixLH(camera, cameraTransform);
@@ -151,12 +173,30 @@ int main(int argc, char* argv[])
     renderSystem.InstantiateRenderedObject(spiral);
     renderSystem.InstantiateRenderedObject(torus);
     
+    glm::mat4 m_mat4ProjectionLeft = ConvertToGlmMatrix4(m_pHMD->GetProjectionMatrix(vr::EVREye::Eye_Left, .1f, 1000.0f));
+    glm::mat4 m_mat4ProjectionRight = ConvertToGlmMatrix4(m_pHMD->GetProjectionMatrix(vr::EVREye::Eye_Right, .1f, 1000.0f));;
+    glm::mat4 m_mat4eyePosLeft = glm::inverse(glm::transpose(ConvertToGlmMatrix4(m_pHMD->GetEyeToHeadTransform(vr::EVREye::Eye_Left))));
+    glm::mat4 m_mat4eyePosRight = glm::inverse(glm::transpose(ConvertToGlmMatrix4(m_pHMD->GetEyeToHeadTransform(vr::EVREye::Eye_Right))));
+    glm::mat4 m_mat4HMDPose(1);
+    Camera eyeCamera;
     while (platform.Run())
     {
         vr::VREvent_t event;
         while (m_pHMD->PollNextEvent(&event, sizeof(event)))
         {
         }
+
+        vr::VRCompositor()->WaitGetPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+
+        if (m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
+        {
+            m_mat4HMDPose = glm::inverse(ConvertToGlmMatrix4(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking));
+        }
+
+        eyeCamera.view = m_mat4eyePosLeft * m_mat4HMDPose;
+        eyeCamera.projection = m_mat4ProjectionLeft;
+
+        renderSystem.LoadRenderCameraParams(eyeCamera);
 
         glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
         glEnable(GL_MULTISAMPLE);
@@ -167,6 +207,9 @@ int main(int argc, char* argv[])
         //RenderScene(vr::Eye_Left);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
+        renderSystem.Draw(spiral);
+        renderSystem.Draw(torus);
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glDisable(GL_MULTISAMPLE);
@@ -183,12 +226,21 @@ int main(int argc, char* argv[])
 
         glEnable(GL_MULTISAMPLE);
 
+        eyeCamera.view = m_mat4eyePosRight * m_mat4HMDPose;
+        eyeCamera.projection = m_mat4ProjectionRight;
+
+        renderSystem.LoadRenderCameraParams(eyeCamera);
+
+
         // Right Eye
         glBindFramebuffer(GL_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId);
         glViewport(0, 0, m_nRenderWidth, m_nRenderHeight);
         //RenderScene(vr::Eye_Right);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
+        renderSystem.Draw(spiral);
+        renderSystem.Draw(torus);
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glDisable(GL_MULTISAMPLE);
@@ -207,9 +259,6 @@ int main(int argc, char* argv[])
         vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture);
         vr::Texture_t rightEyeTexture = { (void*)(uintptr_t)rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
         vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture);
-
-
-        vr::VRCompositor()->WaitGetPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
 
         graphics.ClearScreen();
         renderSystem.Draw(spiral);
