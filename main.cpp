@@ -24,6 +24,7 @@ struct ControllerInfo_t
     vr::VRInputValueHandle_t m_source = vr::k_ulInvalidInputValueHandle;
     vr::VRActionHandle_t m_actionPose = vr::k_ulInvalidActionHandle;
     vr::VRActionHandle_t m_actionHaptic = vr::k_ulInvalidActionHandle;
+    glm::mat4 m_rmat4Pose;
 };
 
 enum EHand
@@ -128,7 +129,7 @@ int main(int argc, char* argv[])
     CreateFrameBuffer(m_nRenderWidth, m_nRenderHeight, leftEyeDesc);
     CreateFrameBuffer(m_nRenderWidth, m_nRenderHeight, rightEyeDesc);
 
-    vr::VRInput()->SetActionManifestPath("C:/Users/Caleb/Documents/GitHub/McShooty/build/out/Assets/hellovr_actions.json");
+    vr::EVRInputError godno = vr::VRInput()->SetActionManifestPath("C:/Users/Caleb/Documents/GitHub/McShooty/build/out/Assets/hellovr_actions.json");
     vr::VRActionHandle_t m_actionHideCubes, m_actionHideThisController, m_actionTriggerHaptic, m_actionAnalongInput;
     vr::VRActionSetHandle_t m_actionsetDemo;
     ControllerInfo_t m_rHand[2];
@@ -142,18 +143,20 @@ int main(int argc, char* argv[])
 
     vr::VRInput()->GetActionHandle("/actions/demo/out/Haptic_Left", &m_rHand[Left].m_actionHaptic);
     vr::VRInput()->GetInputSourceHandle("/user/hand/left", &m_rHand[Left].m_source);
-    vr::VRInput()->GetActionHandle("/actions/demo/in/Hand_Left", &m_rHand[Left].m_actionPose);
+    vr::EVRInputError inputPathError = vr::VRInput()->GetActionHandle("/actions/demo/in/Hand_Left", &m_rHand[Left].m_actionPose);
 
-    vr::VRInput()->GetActionHandle("/actions/demo/out/Haptic_Right", &m_rHand[Right].m_actionHaptic);
+    inputPathError = vr::VRInput()->GetActionHandle("/actions/demo/out/Haptic_Rightwaw", &m_rHand[Right].m_actionHaptic);
     vr::VRInput()->GetInputSourceHandle("/user/hand/right", &m_rHand[Right].m_source);
     vr::VRInput()->GetActionHandle("/actions/demo/in/Hand_Right", &m_rHand[Right].m_actionPose);
 
     //RenderedObject spiral, torus;
-    std::vector<RenderedObject> objectsToRender(2);
+    std::vector<RenderedObject> objectsToRender(3);
     RenderedObject& spiral = objectsToRender[0];
     RenderedObject& torus = objectsToRender[1];
+    RenderedObject& leftHand = objectsToRender[2];
     spiral.renderer.colorTint = { 1, 0, 1, 1 };
     torus.renderer.colorTint = { 1, .6f, 0, 1 };
+    leftHand.renderer.colorTint = { 0, 0, 0, 1 };
     Camera camera(8.0f / 6);
     Camera leftEye((float)m_nRenderWidth / m_nRenderHeight), rightEye((float)m_nRenderWidth / m_nRenderHeight);
     Transform cameraTransform; 
@@ -162,21 +165,26 @@ int main(int argc, char* argv[])
     CameraSystem::CalculateProjectionMatrixLH(camera, camera.aspectRatio);
     MeshLoaderSystem::ProcessMesh("Models\\helix.obj", spiral.mesh);
     MeshLoaderSystem::ProcessMesh("Models\\helix.obj", torus.mesh);
+    MeshLoaderSystem::ProcessMesh("Models\\cube.obj", leftHand.mesh);
     spiral.mesh.renderData = std::make_unique<MeshOpenGLRenderData>();
     torus.mesh.renderData = std::make_unique<MeshOpenGLRenderData>();
+    leftHand.mesh.renderData = std::make_unique<MeshOpenGLRenderData>();
     OpenGLRenderSystem renderSystem;
     renderSystem.LoadRenderCameraParams(camera);
     spiral.transform.position = glm::vec3(0, 0, 15);
     torus.transform.position = glm::vec3(0, 5, 15);
+
     TransformSystem::CalculateWorldMatrix(&spiral.transform);
     TransformSystem::CalculateWorldMatrix(&torus.transform);
+    TransformSystem::CalculateWorldMatrix(&leftHand.transform);
     renderSystem.InstantiateRenderedObject(spiral);
     renderSystem.InstantiateRenderedObject(torus);
+    renderSystem.InstantiateRenderedObject(leftHand);
     
     glm::mat4 m_mat4ProjectionLeft = ConvertToGlmMatrix4(m_pHMD->GetProjectionMatrix(vr::EVREye::Eye_Left, .1f, 1000.0f));
     glm::mat4 m_mat4ProjectionRight = ConvertToGlmMatrix4(m_pHMD->GetProjectionMatrix(vr::EVREye::Eye_Right, .1f, 1000.0f));;
-    glm::mat4 m_mat4eyePosLeft = glm::inverse(glm::transpose(ConvertToGlmMatrix4(m_pHMD->GetEyeToHeadTransform(vr::EVREye::Eye_Left))));
-    glm::mat4 m_mat4eyePosRight = glm::inverse(glm::transpose(ConvertToGlmMatrix4(m_pHMD->GetEyeToHeadTransform(vr::EVREye::Eye_Right))));
+    glm::mat4 m_mat4eyePosLeft = glm::inverse((ConvertToGlmMatrix4(m_pHMD->GetEyeToHeadTransform(vr::EVREye::Eye_Left))));
+    glm::mat4 m_mat4eyePosRight = glm::inverse((ConvertToGlmMatrix4(m_pHMD->GetEyeToHeadTransform(vr::EVREye::Eye_Right))));
     glm::mat4 m_mat4HMDPose(1);
     Camera eyeCamera;
     while (platform.Run())
@@ -191,6 +199,24 @@ int main(int argc, char* argv[])
         if (m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
         {
             m_mat4HMDPose = glm::inverse(ConvertToGlmMatrix4(m_rTrackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking));
+        }
+
+
+        vr::VRActiveActionSet_t actionSet = { 0 };
+        actionSet.ulActionSet = m_actionsetDemo;
+        vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
+
+
+        vr::InputPoseActionData_t poseData;
+        vr::EVRInputError inputErrorHand = vr::VRInput()->GetPoseActionDataForNextFrame(m_rHand[EHand::Left].m_actionPose, vr::TrackingUniverseStanding, &poseData, sizeof(poseData), vr::k_ulInvalidInputValueHandle);
+        
+        if (inputErrorHand == vr::EVRInputError::VRInputError_None)
+        {
+            m_rHand[EHand::Left].m_rmat4Pose = ConvertToGlmMatrix4(poseData.pose.mDeviceToAbsoluteTracking);
+            leftHand.transform.worldMatrix = m_rHand[EHand::Left].m_rmat4Pose;
+            TransformSystem::DecomposeTransform(leftHand.transform, leftHand.transform);
+            leftHand.transform.scale = glm::vec3(.1f);
+            TransformSystem::CalculateWorldMatrix(&leftHand.transform);
         }
 
         eyeCamera.view = m_mat4eyePosLeft * m_mat4HMDPose;
@@ -209,6 +235,7 @@ int main(int argc, char* argv[])
         glEnable(GL_DEPTH_TEST);
         renderSystem.Draw(spiral);
         renderSystem.Draw(torus);
+        renderSystem.Draw(leftHand);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -240,6 +267,7 @@ int main(int argc, char* argv[])
         glEnable(GL_DEPTH_TEST);
         renderSystem.Draw(spiral);
         renderSystem.Draw(torus);
+        renderSystem.Draw(leftHand);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
