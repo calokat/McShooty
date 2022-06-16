@@ -54,9 +54,8 @@ glm::vec3 TransformSystem::GetEulerRotation(Transform& transform)
 	return result;
 }
 
-void TransformSystem::DecomposeTransform(const Transform& toDecomp, Transform& out)
+void TransformSystem::DecomposeTransform(Transform& out)
 {
-	out.worldMatrix = toDecomp.worldMatrix;
 	glm::vec3 throwawaySkew;
 	glm::vec4 throwawayPerspective;
 	glm::decompose(out.worldMatrix, out.scale, out.orientation, out.position, throwawaySkew, throwawayPerspective);
