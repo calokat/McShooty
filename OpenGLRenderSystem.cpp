@@ -9,15 +9,15 @@ OpenGLRenderSystem::OpenGLRenderSystem()
 }
 void OpenGLRenderSystem::InstantiateRenderedObject(RenderedObject& ro)
 {
-    MeshOpenGLRenderData* meshRenderData = static_cast<MeshOpenGLRenderData*>(ro.mesh.renderData.get());
+    MeshOpenGLRenderData* meshRenderData = static_cast<MeshOpenGLRenderData*>(ro.mesh->renderData.get());
     glGenVertexArrays(1, &meshRenderData->vao);
     glBindVertexArray(meshRenderData->vao);
     glGenBuffers(1, &meshRenderData->vbo);
     glGenBuffers(1, &meshRenderData->ibo);
     glBindBuffer(GL_ARRAY_BUFFER, meshRenderData->vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshRenderData->ibo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * ro.mesh.rawVertices.size(), ro.mesh.rawVertices.data(), GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * ro.mesh.rawIndices.size(), ro.mesh.rawIndices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * ro.mesh->rawVertices.size(), ro.mesh->rawVertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * ro.mesh->rawIndices.size(), ro.mesh->rawIndices.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(unlitColorVars.attribInPosition);
     SetupAttribute(unlitColorVars.attribInPosition, 3, GL_FLOAT, Vertex, Position);
 }
@@ -30,10 +30,10 @@ void OpenGLRenderSystem::LoadRenderCameraParams(const Camera& camera)
 
 void OpenGLRenderSystem::Draw(RenderedObject& ro)
 {
-    MeshOpenGLRenderData* renderData = static_cast<MeshOpenGLRenderData*>(ro.mesh.renderData.get());
+    MeshOpenGLRenderData* renderData = static_cast<MeshOpenGLRenderData*>(ro.mesh->renderData.get());
     glBindVertexArray(renderData->vao);
     UpdateRenderer(ro);
-    glDrawElements(GL_TRIANGLES, ro.mesh.rawIndices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, ro.mesh->rawIndices.size(), GL_UNSIGNED_INT, 0);
 }
 
 void OpenGLRenderSystem::InitShaders()

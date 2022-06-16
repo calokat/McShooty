@@ -5,7 +5,7 @@
 
 struct RenderedObject
 {
-    Mesh mesh;
+    std::shared_ptr<Mesh> mesh;
     Transform transform;
     UnlitColorRenderer renderer;
 };
