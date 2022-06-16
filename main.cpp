@@ -39,34 +39,31 @@ int main(int argc, char* argv[])
     //OpenXrApi xr(platform, graphics, PE::GraphicsAPI::OpenGL);
     SteamVrApi vr;
     //RenderedObject spiral, torus;
-    std::vector<RenderedObject> objectsToRender(3);
+    std::vector<RenderedObject> objectsToRender(2);
     RenderedObject& spiral = objectsToRender[0];
-    RenderedObject& torus = objectsToRender[1];
-    RenderedObject& leftHand = objectsToRender[2];
+    RenderedObject& leftHand = objectsToRender[1];
     spiral.renderer.colorTint = { 1, 0, 1, 1 };
-    torus.renderer.colorTint = { 1, .6f, 0, 1 };
     leftHand.renderer.colorTint = { 0, 0, 0, 1 };
     Camera camera(8.0f / 6);
     Transform cameraTransform; 
     TransformSystem::CalculateWorldMatrix(&cameraTransform);
     CameraSystem::CalculateViewMatrixLH(camera, cameraTransform);
     CameraSystem::CalculateProjectionMatrixLH(camera, camera.aspectRatio);
-    MeshLoaderSystem::ProcessMesh("Models\\helix.obj", spiral.mesh);
-    MeshLoaderSystem::ProcessMesh("Models\\helix.obj", torus.mesh);
-    MeshLoaderSystem::ProcessMesh("Models\\cubeHand.obj", leftHand.mesh);
-    spiral.mesh.renderData = std::make_unique<MeshOpenGLRenderData>();
-    torus.mesh.renderData = std::make_unique<MeshOpenGLRenderData>();
-    leftHand.mesh.renderData = std::make_unique<MeshOpenGLRenderData>();
+    std::shared_ptr<Mesh> spiralMesh = std::make_shared<Mesh>();
+    std::shared_ptr<Mesh> handMesh = std::make_shared<Mesh>();
+    spiralMesh->renderData = std::make_shared<MeshOpenGLRenderData>();
+    handMesh->renderData = std::make_shared<MeshOpenGLRenderData>();
+    MeshLoaderSystem::ProcessMesh("Models\\cubeHand.obj", *handMesh);
+    MeshLoaderSystem::ProcessMesh("Models\\helix.obj", *spiralMesh);
+    spiral.mesh = spiralMesh;
+    leftHand.mesh = handMesh;
     OpenGLRenderSystem renderSystem;
     renderSystem.LoadRenderCameraParams(camera);
-    spiral.transform.position = glm::vec3(0, 0, 15);
-    torus.transform.position = glm::vec3(0, 5, 15);
+    spiral.transform.orientation = glm::quat(glm::vec3(0, 0, glm::radians(90.0f)));
 
     TransformSystem::CalculateWorldMatrix(&spiral.transform);
-    TransformSystem::CalculateWorldMatrix(&torus.transform);
     TransformSystem::CalculateWorldMatrix(&leftHand.transform);
     renderSystem.InstantiateRenderedObject(spiral);
-    renderSystem.InstantiateRenderedObject(torus);
     renderSystem.InstantiateRenderedObject(leftHand);
 
     while (platform.Run())
@@ -76,7 +73,6 @@ int main(int argc, char* argv[])
         vr.DrawFrame(objectsToRender, renderSystem);
         graphics.ClearScreen();
         renderSystem.Draw(spiral);
-        renderSystem.Draw(torus);
         graphics._SwapBuffers();
         //xr.Frame(objectsToRender, renderSystem, cameraTransform);
     }
