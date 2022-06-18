@@ -3,4 +3,5 @@
 struct UnlitColorRenderer
 {
 	glm::vec4 colorTint;
+	float time = 0;
 };
