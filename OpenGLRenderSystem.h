@@ -22,6 +22,7 @@ private:
         GLint uniModel;
         GLint uniView;
         GLint uniProjection;
+        GLint uniTime;
     } unlitColorVars;
     void InitShaders();
     void UpdateRenderer(RenderedObject& ro);

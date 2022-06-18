@@ -39,9 +39,9 @@ void OpenGLRenderSystem::Draw(RenderedObject& ro)
 void OpenGLRenderSystem::InitShaders()
 {
     programs->programID = glCreateProgram();
-    programs->vertex = Shader("Shaders\\GLSL\\vertex-unlit-color.glsl", GL_VERTEX_SHADER);
+    programs->vertex = Shader("Shaders\\GLSL\\vertex-rainbow.glsl", GL_VERTEX_SHADER);
     programs->vertex.Compile();
-    programs->fragment = Shader("Shaders\\GLSL\\fragment-unlit-color.glsl", GL_FRAGMENT_SHADER);
+    programs->fragment = Shader("Shaders\\GLSL\\fragment-rainbow.glsl", GL_FRAGMENT_SHADER);
     programs->fragment.Compile();
     glAttachShader(programs->programID, programs->vertex.GetId());
     glAttachShader(programs->programID, programs->fragment.GetId());
@@ -52,6 +52,7 @@ void OpenGLRenderSystem::InitShaders()
     unlitColorVars.uniModel = glGetUniformLocation(programs->programID, "model");
     unlitColorVars.uniProjection = glGetUniformLocation(programs->programID, "projection");
     unlitColorVars.uniView = glGetUniformLocation(programs->programID, "view");
+    unlitColorVars.uniTime = glGetUniformLocation(programs->programID, "time");
 }
 
 void OpenGLRenderSystem::UpdateRenderer(RenderedObject& ro)
@@ -62,4 +63,5 @@ void OpenGLRenderSystem::UpdateRenderer(RenderedObject& ro)
     glUniformMatrix4fv(unlitColorVars.uniProjection, 1, GL_FALSE, glm::value_ptr(cameraProjection));
     glm::vec4 rendererColor = ro.renderer.colorTint;
     glUniform4f(unlitColorVars.uniColorTint, rendererColor.r, rendererColor.g, rendererColor.b, rendererColor.a);
+    glUniform1f(unlitColorVars.uniTime, ro.renderer.time);
 }
