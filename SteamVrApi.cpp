@@ -112,6 +112,17 @@ void SteamVrApi::UpdateDevices()
         TransformSystem::DecomposeTransform(trackedDeviceTransforms[ETrackedDeviceType::LeftHandController]);
     }
 
+    inputErrorHand = vr::VRInput()->GetPoseActionDataForNextFrame(m_rHand[EHand::Right].m_actionPose, vr::TrackingUniverseStanding, &poseData, sizeof(poseData), vr::k_ulInvalidInputValueHandle);
+
+    if (inputErrorHand == vr::EVRInputError::VRInputError_None)
+    {
+        m_rHand[EHand::Right].m_rmat4Pose = ConvertToGlmMatrix4(poseData.pose.mDeviceToAbsoluteTracking);
+
+        trackedDeviceTransforms[ETrackedDeviceType::RightHandController].worldMatrix = m_rHand[EHand::Right].m_rmat4Pose;
+        TransformSystem::DecomposeTransform(trackedDeviceTransforms[ETrackedDeviceType::RightHandController]);
+    }
+
+
     eyes[vr::EVREye::Eye_Left].view = glm::inverse((ConvertToGlmMatrix4(m_pHMD->GetEyeToHeadTransform(vr::EVREye::Eye_Left)))) * m_mat4HMDPose;
     eyes[vr::EVREye::Eye_Left].projection = ConvertToGlmMatrix4(m_pHMD->GetProjectionMatrix(vr::EVREye::Eye_Left, .1f, 1000.f));
     eyes[vr::EVREye::Eye_Right].view = glm::inverse((ConvertToGlmMatrix4(m_pHMD->GetEyeToHeadTransform(vr::EVREye::Eye_Right)))) * m_mat4HMDPose;
