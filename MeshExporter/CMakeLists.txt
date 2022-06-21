@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.16)
+project("MeshExporter")
+file(GLOB src "*.h" "*.cpp" "../Mesh.h" "../Mesh.cpp" "../Vertex.h" "../Vertex.cpp")
+add_executable(MeshExporter ${src})
+include_directories(".")
+set_property(TARGET MeshExporter PROPERTY CXX_STANDARD 17)
+find_package(assimp CONFIG REQUIRED)
+target_link_libraries(MeshExporter PRIVATE assimp::assimp)
