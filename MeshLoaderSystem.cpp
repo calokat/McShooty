@@ -45,6 +45,4 @@ void MeshLoaderSystem::ProcessMesh(const char* path, Mesh& m)
 			m.rawIndices.push_back(face.mIndices[j]);
 		}
 	}
-	m.path = assimpMesh->mName.C_Str();
-	m.numIndices = m.rawIndices.size();
 }
