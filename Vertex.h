@@ -1,16 +1,19 @@
 #pragma once
 #include <glm/glm.hpp>
-//#include <DirectXMath.h>
+#include <istream>
+#include <ostream>
 
-// --------------------------------------------------------
-// A custom vertex definition
-//
-// You will eventually ADD TO this, and/or make more of these!
-// --------------------------------------------------------
 struct Vertex
 {
-	glm::vec3 Position;	    // The position of the vertex
+	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec2 UV;
 	glm::vec3 Tangent;
 };
+
+std::istream& operator>>(std::istream& is, glm::vec3& v);
+std::ostream& operator<<(std::ostream& os, const glm::vec3& v);
+std::istream& operator>>(std::istream& is, glm::vec2& v);
+std::ostream& operator<<(std::ostream& os, const glm::vec2& v);
+std::istream& operator>>(std::istream& is, Vertex& v);
+std::ostream& operator<<(std::ostream& os, const Vertex& v);
