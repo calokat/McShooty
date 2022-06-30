@@ -46,10 +46,6 @@ void LoadMesh(Mesh& m, const char* meshPath)
 
 int main(int argc, char* argv[])
 {
-	const char* importPath = "C:\\Users\\Caleb\\Documents\\GitHub\\McShooty\\build\\out\\Assets\\Models\\helix.mesh";
-	std::ifstream is(importPath, std::ifstream::binary);
-	Mesh cubeMesh;
-	is >> cubeMesh;
     for (int i = 1; i < argc; ++i)
     {
 		Mesh toExport;
