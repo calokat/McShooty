@@ -89,11 +89,11 @@ void* OpenGLESContext::GetContext()
 	SDL_GetCurrentDisplayMode(0, &current);
 
 
-	g_GLContext = SDL_GL_CreateContext((SDL_Window*)platform->GetWindowHandle());
+	g_GLContext = SDL_GL_CreateContext(window);
 	glewInit();
 	if (!g_GLContext)
 	{
-		fprintf(stderr, "Failed to initialize WebGL context!\n");
+		printf("Failed to initialize WebGL context!\n");
 		return nullptr;
 	}
 	SDL_GL_SetSwapInterval(1);
@@ -102,13 +102,14 @@ void* OpenGLESContext::GetContext()
 	return g_GLContext;
 }
 
-void OpenGLESContext::_SwapBuffers(int winHandle)
+void OpenGLESContext::_SwapBuffers()
 {
 	//eglSwapBuffers(eglDisplay, eglSurface);
-	SDL_GL_MakeCurrent((SDL_Window*)platform->GetWindowHandle(), g_GLContext);
-	SDL_GL_SwapWindow((SDL_Window*)platform->GetWindowHandle());
+	SDL_GL_MakeCurrent(window, g_GLContext);
+	SDL_GL_SwapWindow(window);
 }
-OpenGLESContext::OpenGLESContext(IPlatform* plat) : platform(plat)
+OpenGLESContext::OpenGLESContext(SDL_Window* w) : window(w)
 {
+	GetContext();
 }
 #endif
