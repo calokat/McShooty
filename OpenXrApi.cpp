@@ -1,3 +1,4 @@
+#ifndef __EMSCRIPTEN__
 #include "OpenXrApi.h"
 #include <vector>
 #include <iostream>
@@ -551,3 +552,4 @@ bool OpenXrApi::RenderLayer(XrTime predictedDisplayTime, std::vector<XrCompositi
 	layer.views = projectionLayerViews.data();
 	return true;
 }
+#endif

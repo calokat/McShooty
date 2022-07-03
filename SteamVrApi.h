@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #pragma once
 #include "openvr.h"
 #include <glm/glm.hpp>
@@ -61,3 +62,4 @@ public:
     void DrawFrame(std::vector<RenderedObject>& objects, OpenGLRenderSystem& renderSystem);
     const Transform& GetTrackedDeviceTransform(ETrackedDeviceType type);
 };
+#endif

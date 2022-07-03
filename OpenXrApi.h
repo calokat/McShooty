@@ -1,4 +1,5 @@
 #pragma once
+#ifndef __EMSCRIPTEN__
 #include "openxr/openxr.h"
 #include <array>
 #ifdef _WIN32
@@ -90,3 +91,4 @@ private:
     GLuint m_swapchainFramebuffer;
     std::map<uint32_t, uint32_t> m_colorToDepthMap;
 };
+#endif

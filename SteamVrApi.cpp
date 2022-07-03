@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #include "SteamVrApi.h"
 #include "TransformSystem.h"
 glm::mat4 SteamVrApi::ConvertToGlmMatrix4(const vr::HmdMatrix34_t& vrMatrix)
@@ -197,3 +198,4 @@ void SteamVrApi::DrawFrame(std::vector<RenderedObject>& objects, OpenGLRenderSys
     vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture);
 
 }
+#endif
