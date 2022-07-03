@@ -1,7 +1,7 @@
-#ifdef __linux__
+#if  defined(__linux__) || defined(__EMSCRIPTEN__)
 #include "LinuxPlatform.h"
 #include <GL/glew.h>
-
+#include <stdio.h>
 LinuxPlatform::LinuxPlatform()
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
@@ -27,12 +27,13 @@ int LinuxPlatform::InitWindow()
 	return 0;
 }
 
-long LinuxPlatform::Run()
+bool LinuxPlatform::Run()
 {
+	inputSystem.GetKeyPressed();
 	return inputSystem.ShouldQuit();
 }
 
-void* LinuxPlatform::GetWindowHandle()
+SDL_Window* LinuxPlatform::GetWindowHandle()
 {
 	return g_Window;
 }

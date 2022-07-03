@@ -1,7 +1,7 @@
-#ifdef __linux__
+#if  defined(__linux__) || defined(__EMSCRIPTEN__)
 #include "LinuxInputSystem.h"
 #include <iostream>
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 LinuxInputSystem::LinuxInputSystem()
 {
@@ -180,7 +180,7 @@ void LinuxInputSystem::GetKeyPressed()
 		// TODO: check window ID before closing
 		else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE)
 		{
-			shouldQuit = 1;
+			shouldQuit = true;
 		}
     }
 	 int mx, my;
@@ -234,7 +234,7 @@ glm::vec2 LinuxInputSystem::GetDeltaCursorPosition()
 	return current.cursorPos - previous.cursorPos;	
 }
 
-int LinuxInputSystem::ShouldQuit()
+bool LinuxInputSystem::ShouldQuit()
 {
 	return shouldQuit;
 }

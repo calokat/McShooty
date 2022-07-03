@@ -4,7 +4,7 @@
 #include  <X11/Xlib.h>
 #include  <X11/Xatom.h>
 #include  <X11/Xutil.h>
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 #include "LinuxInputSystem.h"
 
 class LinuxPlatform :
@@ -14,8 +14,8 @@ public:
 	LinuxPlatform();
 	~LinuxPlatform();
 	int InitWindow();
-	long Run();
-	void* GetWindowHandle();
+	bool Run();
+	SDL_Window* GetWindowHandle();
 	void* GetDeviceContext();
 	void NewGuiFrame();
 	IInputSystem& GetInputSystem();
