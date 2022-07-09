@@ -29,6 +29,11 @@ void OpenXrApi::Frame(std::vector<RenderedObject> objects, OpenGLRenderSystem& r
 	RenderFrame(objects, renderSystem, camTransform, frameState);
 }
 
+bool OpenXrApi::IsSessionRunning()
+{
+	return m_sessionRunning;
+}
+
 XrResult OpenXrApi::Init()
 {
 	XrResult res;

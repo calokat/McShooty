@@ -46,6 +46,7 @@ class OpenXrApi
 public:
     OpenXrApi(IPlatform& plat, IGraphicsAPI& graph, PE::GraphicsAPI gApiType);
     void Frame(std::vector<RenderedObject> objects, OpenGLRenderSystem& renderSystem, const Transform& camTransform);
+    bool IsSessionRunning();
 private:
     XrResult Init();
     XrResult CreateXRInstance();
