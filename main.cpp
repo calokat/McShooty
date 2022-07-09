@@ -6,7 +6,7 @@
 #include "LinuxPlatform.h"
 #endif
 #include "OpenGLAPI.h"
-#include "MeshLoaderSystem.h"
+#include "MeshDeserializer.h"
 #include "RenderedObject.h"
 #include "MeshOpenGLRenderData.h"
 #include "TransformSystem.h"
@@ -16,7 +16,7 @@
 #include "OpenXrApi.h"
 #include "SteamVrApi.h"
 #include <chrono>
-
+#include <fstream>
 #define SetupAttribute(index, size, type, structure, element) \
 	glVertexAttribPointer(index, size, type, 0, sizeof(structure), (void*)offsetof(structure, element)); \
 
@@ -57,8 +57,21 @@ int main(int argc, char* argv[])
     std::shared_ptr<Mesh> handMesh = std::make_shared<Mesh>();
     spiralMesh->renderData = std::make_shared<MeshOpenGLRenderData>();
     handMesh->renderData = std::make_shared<MeshOpenGLRenderData>();
-    MeshLoaderSystem::ProcessMesh("Models\\cubeHand.obj", *handMesh);
-    MeshLoaderSystem::ProcessMesh("Models\\helix.obj", *spiralMesh);
+
+    std::ifstream spiralStream("Models\\helix.mesh", std::ios::binary);
+    spiralStream.seekg(0, std::ios::end);
+    std::vector<char> spiralBuffer(spiralStream.tellg());
+    spiralStream.seekg(0, std::ios::beg);
+    spiralStream.read(spiralBuffer.data(), spiralBuffer.size());
+    MeshDeserializer::DeserializeMesh(*spiralMesh, spiralBuffer);
+
+    std::ifstream cubeStream("Models\\cube.mesh", std::ios::binary);
+    cubeStream.seekg(0, std::ios::end);
+    std::vector<char> cubeBuffer(cubeStream.tellg());
+    cubeStream.seekg(0, std::ios::beg);
+    cubeStream.read(cubeBuffer.data(), cubeBuffer.size());
+    MeshDeserializer::DeserializeMesh(*handMesh, cubeBuffer);
+
     spiral.mesh = spiralMesh;
     leftHand.mesh = handMesh;
     rightHand.mesh = handMesh;
