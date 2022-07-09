@@ -1,6 +1,7 @@
 #include <stdio.h>
 #ifdef _WIN64
 #include "WindowsPlatform.h"
+#include "WindowsAssetManager.h"
 #endif
 #ifdef __linux__
 #include "LinuxPlatform.h"
@@ -38,6 +39,9 @@ int main(int argc, char* argv[])
     graphics.Init();
     printf("Welcome to McShooty's\n");
     OpenXrApi xr(platform, graphics, PE::GraphicsAPI::OpenGL);
+#ifdef _WIN32
+    WindowsAssetManager assetManager;
+#endif
     //SteamVrApi vr;
     //RenderedObject spiral, torus;
     std::vector<RenderedObject> objectsToRender(3);
@@ -58,24 +62,16 @@ int main(int argc, char* argv[])
     spiralMesh->renderData = std::make_shared<MeshOpenGLRenderData>();
     handMesh->renderData = std::make_shared<MeshOpenGLRenderData>();
 
-    std::ifstream spiralStream("Models\\helix.mesh", std::ios::binary);
-    spiralStream.seekg(0, std::ios::end);
-    std::vector<char> spiralBuffer(spiralStream.tellg());
-    spiralStream.seekg(0, std::ios::beg);
-    spiralStream.read(spiralBuffer.data(), spiralBuffer.size());
-    MeshDeserializer::DeserializeMesh(*spiralMesh, spiralBuffer);
+    Asset spiralAsset = assetManager.LoadAsset("Models\\helix.mesh");
+    MeshDeserializer::DeserializeMesh(*spiralMesh, spiralAsset.GetBytes());
 
-    std::ifstream cubeStream("Models\\cube.mesh", std::ios::binary);
-    cubeStream.seekg(0, std::ios::end);
-    std::vector<char> cubeBuffer(cubeStream.tellg());
-    cubeStream.seekg(0, std::ios::beg);
-    cubeStream.read(cubeBuffer.data(), cubeBuffer.size());
-    MeshDeserializer::DeserializeMesh(*handMesh, cubeBuffer);
+    Asset handAsset = assetManager.LoadAsset("Models\\cube.mesh");
+    MeshDeserializer::DeserializeMesh(*handMesh, handAsset.GetBytes());
 
     spiral.mesh = spiralMesh;
     leftHand.mesh = handMesh;
     rightHand.mesh = handMesh;
-    OpenGLRenderSystem renderSystem;
+    OpenGLRenderSystem renderSystem(assetManager);
     renderSystem.LoadRenderCameraParams(camera);
     spiral.transform.orientation = glm::quat(glm::vec3(0, 0, glm::radians(90.0f)));
 

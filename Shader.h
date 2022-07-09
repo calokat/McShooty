@@ -10,6 +10,7 @@ private:
 public:
 	Shader();
 	Shader(std::string pathArg, GLint typeArg);
+	Shader(const char* buffer, GLint typeArg);
 	void Compile();
 	GLint GetId();
 };

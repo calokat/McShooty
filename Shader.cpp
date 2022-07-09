@@ -53,6 +53,14 @@ void Shader::Compile()
 
 }
 
+Shader::Shader(const char *buffer, GLint typeArg)
+{
+	shaderType = typeArg;
+	id = glCreateShader(shaderType);
+	glShaderSource(id, 1, &buffer, 0);
+}
+
+
 GLint Shader::GetId()
 {
 	return id;

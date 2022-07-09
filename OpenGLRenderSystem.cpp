@@ -3,9 +3,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-OpenGLRenderSystem::OpenGLRenderSystem()
+OpenGLRenderSystem::OpenGLRenderSystem(IAssetManager& assetManager)
 {
-    InitShaders();
+    InitShaders(assetManager);
 }
 void OpenGLRenderSystem::InstantiateRenderedObject(RenderedObject& ro)
 {
@@ -36,12 +36,15 @@ void OpenGLRenderSystem::Draw(RenderedObject& ro)
     glDrawElements(GL_TRIANGLES, ro.mesh->rawIndices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void OpenGLRenderSystem::InitShaders()
+void OpenGLRenderSystem::InitShaders(IAssetManager& manager)
 {
     programs->programID = glCreateProgram();
-    programs->vertex = Shader("Shaders\\GLSL\\vertex-rainbow.glsl", GL_VERTEX_SHADER);
+    Asset vertexShaderAsset = manager.LoadAsset("Shaders\\GLSL\\vertex-rainbow.glsl");
+    programs->vertex = Shader(vertexShaderAsset.GetBytes().data(), GL_VERTEX_SHADER);
     programs->vertex.Compile();
-    programs->fragment = Shader("Shaders\\GLSL\\fragment-rainbow.glsl", GL_FRAGMENT_SHADER);
+
+    Asset fragmentShaderAsset = manager.LoadAsset("Shaders\\GLSL\\fragment-rainbow.glsl");
+    programs->fragment = Shader(fragmentShaderAsset.GetBytes().data(), GL_FRAGMENT_SHADER);
     programs->fragment.Compile();
     glAttachShader(programs->programID, programs->vertex.GetId());
     glAttachShader(programs->programID, programs->fragment.GetId());
